@@ -31,26 +31,11 @@ import { dirname } from "path";
 // Routes live here; this is the C in MVC
 import routes from "./routes";
 import { addServerSideRendering } from "./server-side-rendering";
+import testJiraEndpoints from "./testJiraEndpoints";
 
 // Bootstrap Express and atlassian-connect-express
 const app = express();
 const addon = ace(app);
-
-addon.on("host_settings_saved", function (clientKey, data) {
-  console.log("host_settings_saved");
-  console.log(clientKey);
-  console.log(data);
-  
-  const httpClient = addon.httpClient({ clientKey });
-  httpClient.get(
-    "/rest/api/2/configuration/timetracking/list",
-    // "/rest/api/2/data-policy",
-    (err, res, body) => {
-      console.log("Response status code:", res.statusCode);
-      console.log("Response body:", body);
-    }
-  );
-});
 
 // See config.json
 const port = addon.config.port();
@@ -114,6 +99,9 @@ if (devEnv) app.use(errorHandler());
 
 // Wire up routes
 routes(app, addon);
+
+// Test Jira endpoints
+testJiraEndpoints(addon);
 
 // Boot the HTTP server
 http.createServer(app).listen(port, () => {
